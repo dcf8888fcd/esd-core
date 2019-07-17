@@ -170,6 +170,17 @@ class PortConfig extends BaseConfig
      * @var string
      */
     protected $sslCertFile;
+    
+    /**
+     * 设置SSL隧道加密，设置值为一个文件名字符串，制定cert证书和key私钥的路径。
+     * https应用浏览器必须信任证书才能浏览网页
+     * wss应用中，发起WebSocket连接的页面必须使用https
+     * 浏览器不信任SSL证书将无法使用wss
+     * 文件必须为key格式
+     * @var string
+     */
+    protected $sslKeyFile;
+    
     /**
      * 启用SSL后，设置ssl_ciphers来改变openssl默认的加密算法。Swoole底层默认使用EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH
      * @var string
@@ -447,6 +458,22 @@ class PortConfig extends BaseConfig
     {
         $this->sslCertFile = $sslCertFile;
     }
+    
+    /**
+     * @return string
+     */
+    public function getSslKeyFile()
+    {
+        return $this->sslKeyFile;
+    }
+
+    /**
+     * @param string $sslKeyFile
+     */
+    public function setSslKeyFile(string $sslKeyFile)
+    {
+        $this->sslKeyFile = $sslKeyFile;
+    }
 
     /**
      * @return string
@@ -717,7 +744,9 @@ class PortConfig extends BaseConfig
         ConfigException::AssertNull($this, "sockType", $this->getSockType());
         if ($this->isEnableSsl()) {
             ConfigException::AssertNull($this, "sslCertFile", $this->getSslCertFile());
+            ConfigException::AssertNull($this, "sslKeyFile", $this->getSslKeyFile());
             $build['ssl_cert_file'] = $this->getSslCertFile();
+            $build['ssl_key_file'] = $this->getSslKeyFile();
             if ($this->getSslCiphers() != null) {
                 $build['ssl_ciphers'] = $this->getSslCiphers();
             }
